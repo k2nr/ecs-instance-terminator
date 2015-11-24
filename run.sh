@@ -3,8 +3,8 @@ set -e
 
 ec2_instance_id=`curl http://169.254.169.254/latest/meta-data/instance-id`
 ecs_local_endpoint="ecs-agent:51678/v1"
-ecs_cluster=`http_proxy= https_proxy= curl http://${ecs_local_endpoint}/metadata | jq .Cluster`
-container_instance_arn=`http_proxy= https_proxy= curl http://${ecs_local_endpoint}/metadata | jq .ContainerInstanceArn | cut -d / -f2`
+ecs_cluster=`http_proxy= https_proxy= curl http://${ecs_local_endpoint}/metadata | jq -r .Cluster`
+container_instance_arn=`http_proxy= https_proxy= curl http://${ecs_local_endpoint}/metadata | jq -r .ContainerInstanceArn | cut -d / -f2`
 
 # deregister myself from ECS cluster
 aws ecs deregister-container-instance \
