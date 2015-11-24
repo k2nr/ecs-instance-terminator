@@ -7,5 +7,6 @@ RUN apk add --update curl jq python && \
     rm -rf /var/cache/apk/*
 
 COPY run.sh /run.sh
+ENV STOP_TIMEOUT 120
 
 CMD ["/run.sh"]
