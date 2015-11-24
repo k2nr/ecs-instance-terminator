@@ -1,10 +1,11 @@
 #!/bin/sh
 set -e
 
+no_proxy=${no_proxy},ecs-agent
 ec2_instance_id=`curl http://169.254.169.254/latest/meta-data/instance-id`
 ecs_local_endpoint="ecs-agent:51678/v1"
-ecs_cluster=`http_proxy= https_proxy= curl http://${ecs_local_endpoint}/metadata | jq -r .Cluster`
-container_instance_arn=`http_proxy= https_proxy= curl http://${ecs_local_endpoint}/metadata | jq -r .ContainerInstanceArn | cut -d / -f2`
+ecs_cluster=`curl http://${ecs_local_endpoint}/metadata | jq -r .Cluster`
+container_instance_arn=`curl http://${ecs_local_endpoint}/metadata | jq -r .ContainerInstanceArn | cut -d / -f2`
 
 echo EC2 instance ID: $ec2_instance_id
 echo ECS cluster: $ecs_cluster
