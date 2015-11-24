@@ -1,6 +1,6 @@
 FROM alpine:3.2
 
-RUN apk add --update curl jq python && \
+RUN apk add --update curl jq python docker && \
     curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py && \
     pip install awscli && \
