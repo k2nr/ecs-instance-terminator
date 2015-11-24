@@ -6,6 +6,10 @@ ecs_local_endpoint="ecs-agent:51678/v1"
 ecs_cluster=`http_proxy= https_proxy= curl http://${ecs_local_endpoint}/metadata | jq -r .Cluster`
 container_instance_arn=`http_proxy= https_proxy= curl http://${ecs_local_endpoint}/metadata | jq -r .ContainerInstanceArn | cut -d / -f2`
 
+echo EC2 instance ID: $ec2_instance_id
+echo ECS cluster: $ecs_cluster
+echo ECS Container Instance ARN: $container_instance_arn
+
 # deregister myself from ECS cluster
 aws ecs deregister-container-instance \
     --region=$AWS_REGION \
