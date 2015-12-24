@@ -19,7 +19,24 @@ aws ecs deregister-container-instance \
     --force
 echo "Deregistered from $ecs_cluster"
 
-# detach myself from ELBs
+# Deregister myself from ELBs
+elb_names=`aws elb describe-load-balancers --region $AWS_REGION | jq -r ".LoadBalancerDescriptions | map(select(contains({Instances: [{InstanceId: \"$ec2_instance_id\"}]}))) | map(.LoadBalancerName) | join(\" \")"`
+
+echo $elb_names
+
+for elb in $elb_names
+do
+    echo "Deregistering the instance from $elb"
+    aws elb deregister-instances-from-load-balancer --region $AWS_REGION --load-balancer-name $elb --instances $ec2_instance_id
+done
+
+while [[ -n "$elb_names" ]]
+do
+    sleep 5
+    echo $elb_names
+    echo "Waiting for the instance to be deregistered"
+    elb_names=`aws elb describe-load-balancers --region $AWS_REGION | jq -r ".LoadBalancerDescriptions | map(select(contains({Instances: [{InstanceId: \"$ec2_instance_id\"}]}))) | map(.LoadBalancerName) | join(\" \")"`
+done
 
 # stop ECS tasks
 echo "Stopping docker containers..."
