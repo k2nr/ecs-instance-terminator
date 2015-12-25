@@ -1,9 +1,10 @@
 #!/bin/sh
 set -e
 
-no_proxy=${no_proxy},ecs-agent
 ec2_instance_id=`curl http://169.254.169.254/latest/meta-data/instance-id`
-ecs_local_endpoint="ecs-agent:51678/v1"
+ecs_agent_ip=`curl --unix-socket /var/run/docker.sock http:/containers/ecs-agent/json | jq -r .NetworkSettings.IPAddress`
+no_proxy=$no_proxy,$ecs_agent_ip
+ecs_local_endpoint="$ecs_agent_ip:51678/v1"
 ecs_cluster=`curl http://${ecs_local_endpoint}/metadata | jq -r .Cluster`
 container_instance_arn=`curl http://${ecs_local_endpoint}/metadata | jq -r .ContainerInstanceArn | cut -d / -f2`
 
